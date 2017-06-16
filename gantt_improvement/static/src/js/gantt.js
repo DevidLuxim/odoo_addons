@@ -1,3 +1,4 @@
+
 /*---------------------------------------------------------
  * OpenERP gantt_improvement
  *---------------------------------------------------------*/
@@ -315,26 +316,33 @@ openerp.gantt_improvement = function (instance) {
                         item_parent_id = 'p' + 0;
                         item_parent_name = 'Gantt View';
                     } else if (item[group_bys[0]] !== undefined) {
-                        item_parent_id = 'p' + item[group_bys[0]][0];
+                        item_parent_id = 'p' + item[group_bys[0]][1];
                         item_parent_name = item[group_bys[0]][1];
                     }
 
-                    if (parents[item_parent_id] === undefined) {
-                        parents[item_parent_id] = 1;
+
+
+                         if (((item_parent_id.match(/\//ig) || []).length==0)&&
+                             (parents[item_parent_id+"/"+item.name] === undefined)) {
+                        parents[item_parent_id+"/"+item.name] = 1;
                         datas.push({
-                            'id': item_parent_id,
-                            'text' : item_parent_name,
+                            'id': item_parent_id+"/"+item.name,
+                            'text' : item.name,
+//                            'parent' : item_parent_id,
                             open : true
-                        });
-                    }
+                       });
+                       }
 
                     start = instance.web.auto_str_to_date(item[this.attrs.date_start]);
-                    data = {
-                        'id' : item.id,
+
+ start = instance.web.auto_str_to_date(item[this.attrs.date_start]);
+data = {
+                        'id' : item_parent_id+'/'+item.name,
                         'text': item.name,
                         'start_date' : start,
                         'parent' : item_parent_id,
                     };
+                     start = instance.web.auto_str_to_date(item[this.attrs.date_start]);
                     if (item.sequence !== undefined)
                         data.order = item.sequence;
                     if (this.attrs.progress !== undefined) {
@@ -359,9 +367,9 @@ openerp.gantt_improvement = function (instance) {
                     } else {
                         console.error('Error gantt_improvement E1');
                     }
-                    datas.push(data);
+                    datas.push(data);}
                 }
-            }
+
             this.draw_gantt(datas, links);
         },
 
